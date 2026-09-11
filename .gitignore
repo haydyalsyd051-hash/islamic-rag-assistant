@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# Environment variables / secrets
+.env
+**/.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Vector store / large data files (regenerate from the pipeline instead of committing)
+**/faiss_index/
+**/*.faiss
+**/*.pkl
+**/data/vector_store/*
+!**/data/vector_store/.gitkeep
+
+# Raw source books (large PDFs - keep out of git, share separately if needed)
+**/data/raw/*.pdf
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+*.log
+
+# Node (if front_end is a JS project)
+node_modules/
+dist/
+build/
