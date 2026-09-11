@@ -1,4 +1,4 @@
-# 📖 RAG System — Prophetic Biography Books
+# 📖 RAG System
 
 A complete **Retrieval-Augmented Generation (RAG)** system that answers user questions based **only** on the content of two Seerah books:
 
