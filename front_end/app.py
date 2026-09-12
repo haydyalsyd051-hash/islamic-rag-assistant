@@ -605,7 +605,7 @@ if question:
             response = requests.post(
                 f"{backend_url}/query",
                 json={"question": question},
-                timeout=60,
+                timeout=180,
             )
 
             response.raise_for_status()

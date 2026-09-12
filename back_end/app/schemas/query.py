@@ -2,7 +2,11 @@ from pydantic import BaseModel, Field
 
 
 class QueryRequest(BaseModel):
-    question: str = Field(..., min_length=1, description="سؤال المستخدم")
+    question: str = Field(
+        ...,
+        min_length=1,
+        description="سؤال المستخدم"
+    )
 
 
 class SourceItem(BaseModel):
@@ -13,6 +17,7 @@ class SourceItem(BaseModel):
 class QueryResponse(BaseModel):
     answer: str
     sources: list[str]
+    retrieved_context: list[str]
 
 
 class HealthResponse(BaseModel):

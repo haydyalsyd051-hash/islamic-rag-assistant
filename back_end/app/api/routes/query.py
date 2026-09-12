@@ -28,12 +28,15 @@ async def query(request: Request, body: QueryRequest) -> QueryResponse:
         raise HTTPException(status_code=503, detail=str(e)) from e
 
     if not retrieved:
-        return QueryResponse(answer="لا توجد معلومات كافية في المصادر للإجابة على هذا السؤال.", sources=[])
-
+        return QueryResponse(
+            answer="لا توجد معلومات كافية في المصادر للإجابة على هذا السؤال.",
+            sources=[],
+            retrieved_context=[],
+        )
     try:
         answer = generation_service.generate_answer(body.question, retrieved)
     except Exception as e:  # noqa: BLE001
         raise HTTPException(status_code=502, detail=f"فشل توليد الإجابة: {e}") from e
 
     sources = format_sources(retrieved)
-    return QueryResponse(answer=answer, sources=sources)
+    return QueryResponse(answer=answer, sources=sources, retrieved_context=[item["text"] for item in retrieved])

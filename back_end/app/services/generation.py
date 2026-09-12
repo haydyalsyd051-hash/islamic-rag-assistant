@@ -30,7 +30,12 @@ Strict rules:
 1. Use ONLY the information explicitly stated in the context.
 2. Do NOT use your general knowledge.
 3. Do NOT guess, infer, assume, or invent any information.
-4. Every factual statement in your answer MUST be supported by the context.
+4. Every factual statement in your answer MUST be explicitly supported by the context.
+4.1. Do NOT infer, derive, assume, or calculate an answer from indirect information.
+4.2. Do NOT derive answers from genealogies, sequences, relationships, chronology, or lists.
+4.3. If the context does not contain a direct statement supporting the answer, respond exactly:
+"لا توجد معلومات كافية في المصادر المتاحة للإجابة عن هذا السؤال."
+4.4. Before answering, verify that the answer is explicitly stated in the retrieved context.
 5. If the context does not contain enough information to answer the question, respond exactly:
 "لا توجد معلومات كافية في المصادر المتاحة للإجابة عن هذا السؤال."
 6. If the question is outside the scope of the retrieved Seerah content, respond with the same sentence.
@@ -40,7 +45,9 @@ Strict rules:
 10. Answer in Arabic when the user asks in Arabic.
 11. Keep the answer concise and directly related to the question.
 12. If the answer is not explicitly supported by the retrieved context, state that the information is not available in the provided sources.
-13. Do not answer with only one or two words. When the context contains enough information, provide at least one complete sentence that clearly explains the answer using the supported details from the context.
+13. Before answering, verify that the exact answer is explicitly stated in the retrieved context. If you cannot find a direct statement supporting the answer, respond exactly:
+"لا توجد معلومات كافية في المصادر المتاحة للإجابة عن هذا السؤال."
+14. Do not answer with only one or two words. When the context contains enough information, provide at least one complete sentence that clearly explains the answer using the supported details from the context.
 
 Context:
 {context}
@@ -113,10 +120,10 @@ class GenerationService:
     # ------------------------------------------------------------------
     def _generate_with_anthropic(self, prompt: str, retrieved: list[dict]) -> str:
         if self._anthropic_client is None:
-            logger.warning("ANTHROPIC_API_KEY غير مضبوط، سيتم إرجاع أفضل قطعة مسترجعة كإجابة.")
-            if retrieved:
-                return retrieved[0]["text"][:500]
-            return "تعذّر توليد إجابة: لا يوجد سياق مسترجع ولا مفتاح Anthropic API مضبوط."
+            logger.error("ANTHROPIC_API_KEY غير مضبوط.")
+            raise RuntimeError(
+                "Anthropic API key is not configured."
+            )
 
         try:
             response = self._anthropic_client.messages.create(
@@ -124,8 +131,14 @@ class GenerationService:
                 max_tokens=1000,
                 messages=[{"role": "user", "content": prompt}],
             )
-            text_blocks = [b.text for b in response.content if b.type == "text"]
+
+            text_blocks = [
+                b.text for b in response.content
+                if b.type == "text"
+            ]
+
             return "\n".join(text_blocks).strip()
+
         except APIError:
             logger.exception("Anthropic API error")
             raise
